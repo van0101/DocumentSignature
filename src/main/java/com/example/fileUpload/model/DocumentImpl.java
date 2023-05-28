@@ -1,14 +1,18 @@
 package com.example.fileUpload.model;
 
+import com.example.fileUpload.payload.FileResponse;
 import com.example.fileUpload.services.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class DocumentImpl
@@ -17,6 +21,7 @@ public class DocumentImpl
 
     @Autowired
     FileService fileService;
+
 
     @Autowired
     Document document;
@@ -67,6 +72,16 @@ public class DocumentImpl
     public Document getDoc(String id)
     {
         return documentDAO.get(id);
+    }
+
+    public FileResponse downloadDoc(String id) throws IOException
+    {
+        Document downloadDoc = documentDAO.get(id);
+
+        return new FileResponse(id,
+                "File Downloaded!",
+                fileService.downloadDoc(downloadDoc),
+                downloadDoc);
     }
 
 }

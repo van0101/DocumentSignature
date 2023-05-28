@@ -10,13 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/file")
@@ -80,7 +84,7 @@ public class FileController
         }
 
         return new ResponseEntity<>(new FileResponse
-                (filename, "File is uploaded!"),HttpStatus.OK);
+                (filename, "File is uploaded!").postDisplay(),HttpStatus.OK);
 
     }
 
@@ -97,6 +101,40 @@ public class FileController
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Document Not Found.");
         }
         return requestDoc;
+    }
+
+    @GetMapping("/document/download")
+    @ResponseBody
+    public ResponseEntity<?> getDocument(@RequestParam(value = "id") String documentId)
+    {
+        logger.info("Searching for Document for download " + documentId);
+
+
+        // Get all file details and the document wrt to id
+        FileResponse requestDoc;
+        try
+        {
+            requestDoc = this.documentImpl.downloadDoc(documentId);
+        } catch (IOException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Document Not Found.");
+        }
+
+        String filename = requestDoc
+                .getDocument()
+                .getFileName() + ".pdf";
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ filename);
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(requestDoc.getDownloadedFile());
     }
 
 }
