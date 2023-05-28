@@ -22,7 +22,7 @@ public class FileServicesImpl implements FileService
     Logger logger = LoggerFactory.getLogger(FileService.class);
 
     @Override
-    public boolean uploadImage(Document document, MultipartFile file) throws IOException
+    public boolean uploadDocument(Document document, MultipartFile file) throws IOException
     {
 
         String path = document.getFilePath();

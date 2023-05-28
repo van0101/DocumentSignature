@@ -6,13 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class DocumentImpl
@@ -44,12 +41,11 @@ public class DocumentImpl
         // Create DID
         attachSignatures(document, documentSignature);
 
-        // Other impl as needed
+        // Here, the document obj has the file uploaded
+        // Can add other impl as needed
 
-
-        // Verify File
         // Upload File
-        boolean isUploaded = this.fileService.uploadImage(document, file);
+        boolean isUploaded = this.fileService.uploadDocument(document, file);
 
         if(isUploaded) logger.info(" ## Document Uploaded");
         else logger.info(" ## Document could not be Uploaded");
@@ -57,7 +53,7 @@ public class DocumentImpl
         // Save File
         documentDAO.saveFinalDocument(document);
 
-        // response
+        // Response
         return document.getFileName();
 
     }

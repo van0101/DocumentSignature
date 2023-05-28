@@ -10,7 +10,7 @@ import java.io.IOException;
 @Service
 public interface FileService
 {
-    boolean uploadImage(Document document, MultipartFile file) throws IOException;
+    boolean uploadDocument(Document document, MultipartFile file) throws IOException;
 
     ByteArrayResource downloadDoc(Document document) throws IOException;
 

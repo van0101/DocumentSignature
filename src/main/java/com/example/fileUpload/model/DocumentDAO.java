@@ -20,7 +20,7 @@ public class DocumentDAO
     }
     Document get(String id)
     {
-        logger.info("Searching in DAO ");
+        logger.info("## Searching for file in storage ");
         for (Document document : documentsStorage)
         {
             if(document.getDid().equals(id))

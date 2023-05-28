@@ -44,13 +44,13 @@ public class FileController
             @RequestParam("request") String data)
     {
 
-        logger.info("Input doc: " + Inputdoc);
-        logger.info("Input user data JSON : " + data);
+        logger.info("## Input document: " + Inputdoc.getName());
+        logger.info("## Input user data JSON : \n" + data);
 
         String filename = null;
 
-        // To json
-        DocumentSignature documentSignature = null;
+        // Convert from json
+        DocumentSignature documentSignature = null; // Relevant details of signature
         try
         {
             documentSignature = objectMapper.readValue(data, DocumentSignature.class);
@@ -60,39 +60,27 @@ public class FileController
                     "Invalid Request");
         }
 
-        logger.info("Obj converted " + documentSignature);
-        // TODO Verify Credentials
-        boolean verified = true;
-
+        logger.info("## Obj converted " + documentSignature);
 
         // Save File and Signature
-        if(verified)
+        try
         {
-            try
-            {
-                filename = documentImpl.saveData(documentSignature, Inputdoc);
-            }
-            catch (IOException e)
-            {
-                return new ResponseEntity<>(new FileResponse
-                        (filename, "File is not uploaded!"),HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            filename = documentImpl.saveData(documentSignature, Inputdoc);
         }
-        else
+        catch (IOException e)
         {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new FileResponse
+                    (filename, "File is not uploaded!"),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(new FileResponse
                 (filename, "File is uploaded!").postDisplay(),HttpStatus.OK);
 
     }
-
-    // TODO Verify Credentials
     @GetMapping("/document/{documentId}")
     public Document getDoc(@PathVariable String documentId)
     {
-        logger.info("Searching for Document " + documentId);
+        logger.info("## Searching for Document " + documentId);
 
         Document requestDoc = this.documentImpl.getDoc(documentId);
 
@@ -107,8 +95,7 @@ public class FileController
     @ResponseBody
     public ResponseEntity<?> getDocument(@RequestParam(value = "id") String documentId)
     {
-        logger.info("Searching for Document for download " + documentId);
-
+        logger.info("## Searching for Document for download " + documentId);
 
         // Get all file details and the document wrt to id
         FileResponse requestDoc;
